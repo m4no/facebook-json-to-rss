@@ -7,15 +7,18 @@
     $title_length = 70;
     //OPTIONAL You can specify your timezone here, if different from your server config
     // date_default_timezone_set('Europe/Berlin');
-    //Download at https://github.com/facebook/facebook-php-sdk
-    require_once("facebook-php-sdk-master/src/facebook.php");
+    //Download at https://github.com/facebook/facebook-php-sdk for authentication
+    //require_once("facebook-php-sdk-master/src/facebook.php");
     //Setup your app at https://developers.facebook.com/apps
     $config = array();
     $config['appId'] = 'ADD_HERE';
     $config['secret'] = 'ADD_HERE';
     $config['fileUpload'] = false; // optional
-    $facebook = new Facebook($config);
-    $access_token = $facebook->getAccessToken();
+    // if using SDK
+    //$facebook = new Facebook($config);
+    //$access_token = $facebook->getAccessToken();
+    // if not using SDK and getting access token from developer account
+    $access_token='insert access token here';
     $screen_name  = $_GET['page'];
     $statuses_url = 'https://graph.facebook.com/' . $screen_name . '/posts?access_token=' . $access_token;
     $fetch_json   = file_get_contents($statuses_url);
@@ -32,6 +35,8 @@
                 <docs>https://github.com/khawkins98/facebook-json-to-rss</docs>
                 <generator>facebook-json-to-rss</generator>
                 ";
+    //for validation
+    $output .='<atom:link href="http://ulrichlang.de/TTRSS/Facebook-RSS/index.php?page='.$screen_name.'" rel="self" type="application/rss+xml" />';
     header("Content-Type: application/rss+xml; charset=UTF-8");
     foreach ($return->data as $line){
         //Catch facebook posts with no links and set it to the page url
