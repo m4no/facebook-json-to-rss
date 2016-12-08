@@ -21,7 +21,10 @@
     $access_token='insert access token here';
     $screen_name  = $_GET['page'];
     $statuses_url = 'https://graph.facebook.com/' . $screen_name . '/posts?access_token=' . $access_token;
-    $fetch_json   = file_get_contents($statuses_url);
+    //Error reporting for missing facebook user
+    $fetch_json   = @file_get_contents($statuses_url);
+	   if($fetch_json === FALSE) { echo "<h2>Fehler beim Holen der Daten</h2> Konnte den User <b>".$screen_name."</b> nicht finden";}
+		   else{
     $return       = json_decode($fetch_json);
     $now          = date("D, d M Y H:i:s O");
     $output = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>
@@ -71,5 +74,5 @@
 
     }
     $output .= "</channel>".PHP_EOL."</rss>";
-    echo $output;
+    echo $output;}
 ?>
