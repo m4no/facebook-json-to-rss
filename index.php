@@ -20,7 +20,7 @@
     // if not using SDK and getting access token from developer account
     $access_token='insert access token here';
     $screen_name  = $_GET['page'];
-    $statuses_url = 'https://graph.facebook.com/' . $screen_name . '/posts?access_token=' . $access_token;
+    $statuses_url = 'https://graph.facebook.com/' . $screen_name . '/posts?fields=full_picture,description,message&access_token=' . $access_token;
     //Error reporting for missing facebook user
     $fetch_json   = @file_get_contents($statuses_url);
 	   if($fetch_json === FALSE) { echo "<h2>Fehler beim Holen der Daten</h2> Konnte den User <b>".$screen_name."</b> nicht finden";}
@@ -55,7 +55,11 @@
             if (strlen($linetitle) > $title_length) { 
                 $linetitle = preg_replace('/\s+?(\S+)?$/', '', substr($linetitle, 0, $title_length)) . ' ...';
             } 
-            // Any attachment?
+            $description="    <description><![CDATA[".htmlspecialchars(strip_tags($line->message),ENT_HTML401,'utf-8')."]]></description>";
+	    if (isset($line->description)) {
+		$description="    <description><![CDATA[".htmlspecialchars(strip_tags($line->description),ENT_HTML401,'utf-8')."]]></description>";
+	    }
+	    // Any attachment?
             $enclosure = '';
             if (isset($line->picture)) {
                 $enclosure = '<media:content type="image/jpeg"  url="' . htmlspecialchars($line->picture,ENT_HTML401,'utf-8') . '" />';
@@ -63,7 +67,7 @@
             $output .= "  <item>".PHP_EOL.
                 "    <title><![CDATA[".htmlspecialchars($linetitle,ENT_HTML401,'utf-8')."]]></title>".PHP_EOL.
                 "    <link><![CDATA[".utf8_encode(htmlentities(utf8_encode(strip_tags($line->link)),ENT_HTML401,'utf-8'))."]]></link>".PHP_EOL.
-                "    <description><![CDATA[".htmlspecialchars(strip_tags($line->message),ENT_HTML401,'utf-8')."]]></description>".PHP_EOL.
+		$description.PHP_EOL.
                 "    ".$enclosure.PHP_EOL.
                 // Ommitted as this should be an e-mail
                 //"    <author><![CDATA[".htmlentities(utf8_encode($line->from->name))."]]></author>".PHP_EOL.
